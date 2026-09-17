@@ -1818,12 +1818,12 @@ function Mi(e, t, n, r, i) {
 }
 
 function Ni() {
-    let e = M - 14,
-        t = N - 14;
+    let e = M - 16,
+        t = N - 16;
     if (e < 24 || t < 24) return;
     let n = j === `playing` ? an : .2,
         r = (.78 + .22 * Math.sin(performance.now() / 640)) * (.45 + n * .55);
-    A.save(), A.lineJoin = `round`, A.lineCap = `round`, A.shadowBlur = 8 + n * 6, A.shadowColor = `rgba(255, 80, 210, ${.45+r*.22})`, A.strokeStyle = `rgba(255, 118, 220, ${.78+r*.12})`, A.lineWidth = 1.15, Mi(7, 7, e, t, 22), A.shadowColor = `rgba(132, 118, 255, ${.35+r*.22})`, A.strokeStyle = `rgba(168, 150, 255, ${.68+r*.18})`, A.lineWidth = .85, Mi(8.6, 8.6, e - 3.2, t - 3.2, 21), A.shadowColor = `rgba(94, 225, 232, ${.32+r*.2})`, A.strokeStyle = `rgba(94, 225, 232, ${.7+r*.16})`, A.lineWidth = .7, Mi(10, 10, e - 6, t - 6, 20), A.restore()
+    A.save(), A.lineJoin = `round`, A.lineCap = `round`, A.shadowBlur = 8 + n * 4, A.shadowColor = `rgba(255, 80, 210, ${.32+r*.14})`, A.strokeStyle = `rgba(94, 225, 232, ${.55+r*.12})`, A.lineWidth = 1.25, Mi(8, 8, e, t, 22), A.restore()
 }
 
 function Pi() {
