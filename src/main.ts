@@ -5,6 +5,7 @@
  * then branded DODGE!, with side/top-only ball spawns and a Coming soon Top 10.
  */
 import "./style.css";
+import { initBgm, unlockBgm } from "./bgm";
 import { lockNativeChrome } from "./native";
 
 var y = {
@@ -151,6 +152,7 @@ function ge() {
         }
         S.state === `suspended` && S.resume().catch(() => void 0)
     }
+    unlockBgm()
 }
 
 function _e(e, t, n, r = 0) {
@@ -1922,4 +1924,4 @@ for (let e of te) {
     let t = document.createElement(`li`);
     t.textContent = e, wt.append(t)
 }
-dn = Fn(), q = lr(), lockNativeChrome(), kn(), gr(), Bi(), cn = performance.now(), requestAnimationFrame(Ri);
+dn = Fn(), q = lr(), lockNativeChrome(), initBgm(), kn(), gr(), Bi(), cn = performance.now(), requestAnimationFrame(Ri);
