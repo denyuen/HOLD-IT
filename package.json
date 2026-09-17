@@ -1,0 +1,19 @@
+{
+  "name": "dodge",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "DODGE! — one-thumb hold-to-survive neon PROTOZ game",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
+  }
+}
