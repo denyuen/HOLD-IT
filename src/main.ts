@@ -916,12 +916,11 @@ async function Qn() {
 async function $n() {
     j === `idle` && (kt.textContent = y.top10, Mt.textContent = y.close, Ot.classList.remove(`is-hidden`), await Zn(At, jt))
 }
-async function er(e) {
-    Nt.classList.remove(`is-hidden`);
-    Pt.textContent = y.top10;
+async function er(_e) {
+    Nt.classList.add(`is-hidden`);
     Ft.replaceChildren();
     It.classList.add(`is-hidden`);
-    Z(zt, y.comingSoon)
+    Z(zt, ``)
 }
 async function tr() {
     Z(zt, y.comingSoon)
