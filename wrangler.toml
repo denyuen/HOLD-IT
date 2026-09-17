@@ -1,0 +1,8 @@
+# Cloudflare Pages — project name: dodge
+# Dashboard / wrangler pages deploy settings:
+#   Build command:     npm run build
+#   Build output dir:  dist
+#   Production branch: main
+name = "dodge"
+compatibility_date = "2026-09-17"
+pages_build_output_dir = "dist"
