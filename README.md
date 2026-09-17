@@ -52,7 +52,3 @@ This repo is a web host. After `npm run build`, Capacitor can wrap `dist/`:
 npx cap add ios
 npx cap sync
 ```
-
-## Music
-
-Background loop: Johann Strauss II, *An der schönen blauen Donau* (The Blue Danube), Op. 314. Recording by the U.S. Marine Band (U.S. federal government work, public domain). Tap **♪** to mute.

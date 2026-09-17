@@ -5,7 +5,6 @@
  * then branded DODGE!, with side/top-only ball spawns and a Coming soon Top 10.
  */
 import "./style.css";
-import { initBgm, unlockBgm } from "./bgm";
 import { lockNativeChrome } from "./native";
 
 var y = {
@@ -152,7 +151,6 @@ function ge() {
         }
         S.state === `suspended` && S.resume().catch(() => void 0)
     }
-    unlockBgm()
 }
 
 function _e(e, t, n, r = 0) {
@@ -482,7 +480,7 @@ function Ye(e, t, n, r) {
 }
 
 function Xe(e) {
-    e.save(), e.strokeStyle = `rgba(255, 110, 214, 0.4)`, e.shadowColor = `rgba(255, 80, 210, 0.35)`, e.shadowBlur = 12, e.lineWidth = 4, e.strokeRect(2, 2, 1076, 1916), e.shadowBlur = 0, e.strokeStyle = `rgba(94, 225, 232, 0.28)`, e.lineWidth = 1.2, e.strokeRect(8, 8, 1064, 1904), e.restore()
+    e.save(), e.strokeStyle = `rgba(255, 110, 214, 0.4)`, e.shadowColor = `rgba(255, 80, 210, 0.28)`, e.shadowBlur = 6, e.lineWidth = 1.4, e.strokeRect(2, 2, 1076, 1916), e.shadowBlur = 0, e.strokeStyle = `rgba(94, 225, 232, 0.28)`, e.lineWidth = .8, e.strokeRect(8, 8, 1064, 1904), e.restore()
 }
 
 function Ze(e, t, n) {
@@ -1825,7 +1823,7 @@ function Ni() {
     if (e < 24 || t < 24) return;
     let n = j === `playing` ? an : .2,
         r = (.78 + .22 * Math.sin(performance.now() / 640)) * (.45 + n * .55);
-    A.save(), A.lineJoin = `round`, A.lineCap = `round`, A.shadowBlur = 22 + n * 18, A.shadowColor = `rgba(255, 80, 210, ${.7+r*.3})`, A.strokeStyle = `rgba(255, 118, 220, ${.88+r*.12})`, A.lineWidth = 3.2, Mi(7, 7, e, t, 22), A.shadowColor = `rgba(132, 118, 255, ${.55+r*.32})`, A.strokeStyle = `rgba(168, 150, 255, ${.78+r*.2})`, A.lineWidth = 2.1, Mi(10.2, 10.2, e - 6.4, t - 6.4, 19), A.shadowColor = `rgba(94, 225, 232, ${.5+r*.3})`, A.strokeStyle = `rgba(94, 225, 232, ${.78+r*.2})`, A.lineWidth = 1.7, Mi(12.8, 12.8, e - 11.6, t - 11.6, 17), A.restore()
+    A.save(), A.lineJoin = `round`, A.lineCap = `round`, A.shadowBlur = 8 + n * 6, A.shadowColor = `rgba(255, 80, 210, ${.45+r*.22})`, A.strokeStyle = `rgba(255, 118, 220, ${.78+r*.12})`, A.lineWidth = 1.15, Mi(7, 7, e, t, 22), A.shadowColor = `rgba(132, 118, 255, ${.35+r*.22})`, A.strokeStyle = `rgba(168, 150, 255, ${.68+r*.18})`, A.lineWidth = .85, Mi(8.6, 8.6, e - 3.2, t - 3.2, 21), A.shadowColor = `rgba(94, 225, 232, ${.32+r*.2})`, A.strokeStyle = `rgba(94, 225, 232, ${.7+r*.16})`, A.lineWidth = .7, Mi(10, 10, e - 6, t - 6, 20), A.restore()
 }
 
 function Pi() {
@@ -1924,4 +1922,4 @@ for (let e of te) {
     let t = document.createElement(`li`);
     t.textContent = e, wt.append(t)
 }
-dn = Fn(), q = lr(), lockNativeChrome(), initBgm(), kn(), gr(), Bi(), cn = performance.now(), requestAnimationFrame(Ri);
+dn = Fn(), q = lr(), lockNativeChrome(), kn(), gr(), Bi(), cn = performance.now(), requestAnimationFrame(Ri);
