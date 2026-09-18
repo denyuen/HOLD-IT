@@ -1,8 +1,8 @@
 // @ts-nocheck
 /**
  * DODGE! — hold-to-survive neon PROTOZ host.
- * Restored from the live dodge-host / dodge-leaderboard Capacitor web build,
- * then branded DODGE!, with side/top-only ball spawns and a Coming soon Top 10.
+ * Restored from the live dodge-host Capacitor web build, then branded DODGE!,
+ * with side/top-only ball spawns and local-best scoring (no world leaderboard).
  */
 import "./style.css";
 import { lockNativeChrome } from "./native";
@@ -32,18 +32,9 @@ var y = {
         shield: `Shield`,
         shieldBroke: `Shield broke`,
         howToPlay: `How to play`,
-        close: `Close`,
-        top10: `Top 10`,
-        postScore: `Post`,
-        worldOne: `World #1`,
-        anon: `Anon`,
-        boardOffline: `Offline`,
-        boardPosted: `Posted`,
-        boardEmpty: `Coming soon`,
-        comingSoon: `Coming soon`,
-        boardAnonHint: `Posted as Anon — add a name to claim it`
+        close: `Close`
     },
-    te = [`Hold to survive. Don’t lift. Don’t touch the balls.`, `Keep holding through 3-2-1, then the timer starts.`, `Balls speed up and bounce off each other. Extra ball every 10s (Level Up).`, `Level 2+: neon pickups — clock, shrink, or shield. Up to two per stage. Risky to grab.`, `Game Over: View path or Share. World Top 10 is coming soon.`],
+    te = [`Hold to survive. Don’t lift. Don’t touch the balls.`, `Keep holding through 3-2-1, then the timer starts.`, `Balls speed up and bounce off each other. Extra ball at 5s, then every 10s (Level Up).`, `Level 2+: neon pickups — clock, shrink, or shield. Up to two per stage. Risky to grab.`, `Game Over: View path or Share. Local best is saved on this device.`],
     ne = `denyuen`,
     re = [`That all you got?`, `One more. Prove it.`, `Bet you can’t beat that.`, `Again. Don’t choke.`, `That was a warmup.`, `Hold longer. I dare you.`, `Cute. Now do it for real.`, `Run it back.`],
     ie = -1;
@@ -131,9 +122,15 @@ var oe = `dodge-best-ms`,
     };
 b.bgEdge, b.ball;
 var de = [`IRON`, `BRONZE`, `SILVER`, `GOLD`, `PLATINUM`, `EMERALD`, `DIAMOND`, `MASTER`, `GRANDMASTER`, `CHALLENGER`],
-    fe = .45,
-    pe = 1100,
-    me = 1e4,
+    // Stage 1 lasts STAGE_FIRST_MS; every later stage lasts STAGE_LATER_MS.
+    STAGE_FIRST_MS = 5e3,
+    STAGE_LATER_MS = 1e4,
+    // Ease-out speed: SPEED_MIN + (SPEED_MAX - SPEED_MIN) * (1 - e^(-t / SPEED_TAU)).
+    // t is survival time in seconds. TAU is seconds to ~63% of the remaining range.
+    // Early stages gain speed quickly; later stages approach SPEED_MAX asymptotically.
+    SPEED_MIN = 400,
+    SPEED_MAX = 980,
+    SPEED_TAU = 12,
     S = null;
 
 function he() {
@@ -480,7 +477,7 @@ function Ye(e, t, n, r) {
 }
 
 function Xe(e) {
-    e.save(), e.strokeStyle = `rgba(255, 110, 214, 0.4)`, e.shadowColor = `rgba(255, 80, 210, 0.28)`, e.shadowBlur = 6, e.lineWidth = 1.4, e.strokeRect(2, 2, 1076, 1916), e.shadowBlur = 0, e.strokeStyle = `rgba(94, 225, 232, 0.28)`, e.lineWidth = .8, e.strokeRect(8, 8, 1064, 1904), e.restore()
+    e.save(), e.strokeStyle = `rgba(255, 110, 214, 0.45)`, e.shadowColor = `rgba(255, 80, 210, 0.2)`, e.shadowBlur = 4, e.lineWidth = .85, e.strokeRect(2, 2, 1076, 1916), e.shadowBlur = 0, e.strokeStyle = `rgba(94, 225, 232, 0.32)`, e.lineWidth = .75, e.strokeRect(8, 8, 1064, 1904), e.restore()
 }
 
 function Ze(e, t, n) {
@@ -562,77 +559,6 @@ async function tt(e) {
         return `copied`
     }
 }
-var nt = `dodge-board-name`,
-    rt = ``;
-
-function it() {
-    if (typeof window < `u`) {
-        let e = window.location.origin.replace(/\/+$/, ``),
-            t = window.location.hostname,
-            n = window.location.port;
-        if (rt === e || t.endsWith(`workers.dev`) || (t === `localhost` || t === `127.0.0.1`) && n !== `43147`) return ``;
-        if (!rt) return t.endsWith(`workers.dev`) ? `` : null
-    }
-    return rt || null
-}
-
-function at() {
-    let e = it();
-    return e === null ? `` : e === `` ? typeof window < `u` ? window.location.origin : `` : e
-}
-
-function ot() {
-    try {
-        return localStorage.getItem(nt) ?? ``
-    } catch {
-        return ``
-    }
-}
-
-function st(e) {
-    try {
-        e ? localStorage.setItem(nt, e) : localStorage.removeItem(nt)
-    } catch {}
-}
-
-function ct(e) {
-    if (!e || typeof e != `object`) return null;
-    let t = e.scores;
-    if (!Array.isArray(t)) return null;
-    let n = [];
-    for (let e of t) {
-        if (!e || typeof e != `object`) continue;
-        let t = e,
-            r = Number(t.time_ms ?? t.timeMs);
-        if (!Number.isFinite(r) || r < 1) continue;
-        let i = typeof t.name == `string` ? t.name : ``;
-        n.push({
-            name: i,
-            timeMs: r
-        })
-    }
-    return n
-}
-async function lt(_e, _t) {
-    return null
-}
-
-function ut() {
-    return lt(`/leaderboard`)
-}
-
-function dt(e, t) {
-    return lt(`/score`, {
-        method: `POST`,
-        headers: {
-            "Content-Type": `application/json`
-        },
-        body: JSON.stringify({
-            timeMs: Math.round(e),
-            name: t
-        })
-    })
-}
 var T = document.querySelector(`#stage`),
     E = document.querySelector(`#timer`),
     D = document.querySelector(`#overlay`),
@@ -650,20 +576,6 @@ var T = document.querySelector(`#stage`),
     Ct = document.querySelector(`#how-to-title`),
     wt = document.querySelector(`#how-to-list`),
     Tt = document.querySelector(`#how-to-close`),
-    Et = document.querySelector(`#world-one`),
-    Dt = document.querySelector(`#board-open`),
-    Ot = document.querySelector(`#board`),
-    kt = document.querySelector(`#board-title`),
-    At = document.querySelector(`#board-modal-rows`),
-    jt = document.querySelector(`#board-modal-status`),
-    Mt = document.querySelector(`#board-close`),
-    Nt = document.querySelector(`#board-strip`),
-    Pt = document.querySelector(`#board-strip-title`),
-    Ft = document.querySelector(`#board-rows`),
-    It = document.querySelector(`#board-form`),
-    Lt = document.querySelector(`#board-name`),
-    Rt = document.querySelector(`#board-submit`),
-    zt = document.querySelector(`#board-status`),
     Bt = document.querySelector(`#view-path`),
     Vt = document.querySelector(`#share-score`),
     Ht = document.querySelector(`#share-stage`),
@@ -882,54 +794,10 @@ function qn() {
     j === `idle` && (Ct.textContent = y.howToPlay, Tt.textContent = y.close, St.classList.remove(`is-hidden`))
 }
 
-function Jn() {
-    Ot.classList.add(`is-hidden`)
-}
-
-function Yn(e) {
-    return e.name.trim() || y.anon
-}
-
-function Xn(e, t) {
-    e.replaceChildren(), t.slice(0, 10).forEach((t, n) => {
-        let r = document.createElement(`li`),
-            i = document.createElement(`span`);
-        i.textContent = String(n + 1);
-        let a = document.createElement(`span`);
-        a.textContent = Yn(t);
-        let o = document.createElement(`span`);
-        o.textContent = `${$(t.timeMs)}s`, r.append(i, a, o), e.append(r)
-    })
-}
-
-function Z(e, t, n = !1) {
-    e.textContent = t, e.classList.toggle(`is-off`, n)
-}
-async function Zn(e, t) {
-    e.replaceChildren();
-    Z(t, y.comingSoon);
-    return null
-}
-async function Qn() {
-    Et.textContent = ``
-}
-async function $n() {
-    j === `idle` && (kt.textContent = y.top10, Mt.textContent = y.close, Ot.classList.remove(`is-hidden`), await Zn(At, jt))
-}
-async function er(_e) {
-    Nt.classList.add(`is-hidden`);
-    Ft.replaceChildren();
-    It.classList.add(`is-hidden`);
-    Z(zt, ``)
-}
-async function tr() {
-    Z(zt, y.comingSoon)
-}
-
 function nr(e, t) {
     ge(), j = `countdown`;
     let n = An(e, t);
-    L = n.x, R = n.y, z = !0, P = [], F = [], I = [], tn = 0, En = 0, Dn = performance.now(), E.textContent = `0.0`, D.classList.add(`is-hidden`), D.classList.remove(`is-start`, `is-over`), Wt.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), Yt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), k.classList.remove(`is-on`), qt.classList.remove(`is-hidden`), Wn(), Kn(), Jn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), Rn()
+    L = n.x, R = n.y, z = !0, P = [], F = [], I = [], tn = 0, En = 0, Dn = performance.now(), E.textContent = `0.0`, D.classList.add(`is-hidden`), D.classList.remove(`is-start`, `is-over`), Wt.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), Yt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), k.classList.remove(`is-on`), qt.classList.remove(`is-hidden`), Wn(), Kn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), Rn()
 }
 
 function rr() {
@@ -952,7 +820,7 @@ function ar(e) {
 }
 
 function or() {
-    let e = Y((wr() - 400) / (pe - 400), 0, 1),
+    let e = Y((wr() - SPEED_MIN) / (SPEED_MAX - SPEED_MIN), 0, 1),
         t = Y((P.length - 1) / 5, 0, 1);
     return Y(e * .55 + t * .45, 0, 1)
 }
@@ -1033,11 +901,11 @@ async function hr(e) {
 }
 
 function gr() {
-    j = `idle`, P = [], F = [], I = [], tn = 0, U = 0, K = !1, E.textContent = `0.0`, ft.textContent = y.title, mt.textContent = ``, ht.textContent = ``, gt.textContent = ``, pt.textContent = dr(), _t.textContent = ``, vt.textContent = ``, yt.textContent = Ln(), bt.textContent = y.holdToStart, bt.classList.remove(`is-hidden`), D.classList.remove(`is-hidden`, `is-over`, `is-best`, `is-won`), D.classList.add(`is-start`), Wt.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), Yt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), Gn(), Kn(), Jn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), qt.classList.remove(`is-hidden`), Rn(), mr(), Nt.classList.add(`is-hidden`), Qn()
+    j = `idle`, P = [], F = [], I = [], tn = 0, U = 0, K = !1, E.textContent = `0.0`, ft.textContent = y.title, mt.textContent = ``, ht.textContent = ``, gt.textContent = ``, pt.textContent = dr(), _t.textContent = ``, vt.textContent = ``, yt.textContent = Ln(), bt.textContent = y.holdToStart, bt.classList.remove(`is-hidden`),     D.classList.remove(`is-hidden`, `is-over`, `is-best`, `is-won`), D.classList.add(`is-start`), Wt.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), Yt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), Gn(), Kn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), qt.classList.remove(`is-hidden`), Rn(), mr()
 }
 
 function _r(e) {
-    j = `lost`, ft.textContent = y.title, mt.textContent = y.gameOver, ht.textContent = ae(), gt.textContent = $(e), pt.textContent = ``, _t.textContent = fr(e), vt.textContent = K ? y.newBest : ``, yt.textContent = K ? `` : Ln(), bt.textContent = y.holdToStart, bt.classList.remove(`is-hidden`), Wt.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), D.classList.remove(`is-hidden`, `is-start`, `is-over`), D.classList.toggle(`is-best`, K), D.classList.toggle(`is-won`, q != null && e > q), D.offsetWidth, D.classList.add(`is-over`), k.classList.remove(`is-on`), Gn(), Kn(), Jn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), qt.classList.remove(`is-hidden`), Rn(), hr(e), er(e)
+    j = `lost`, ft.textContent = y.title, mt.textContent = y.gameOver, ht.textContent = ae(), gt.textContent = $(e), pt.textContent = ``, _t.textContent = fr(e), vt.textContent = K ? y.newBest : ``, yt.textContent = K ? `` : Ln(), bt.textContent = y.holdToStart, bt.classList.remove(`is-hidden`), Wt.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), D.classList.remove(`is-hidden`, `is-start`, `is-over`), D.classList.toggle(`is-best`, K), D.classList.toggle(`is-won`, q != null && e > q),     D.offsetWidth, D.classList.add(`is-over`), k.classList.remove(`is-on`), Gn(), Kn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), qt.classList.remove(`is-hidden`), Rn(), hr(e)
 }
 
 function vr() {
@@ -1166,9 +1034,11 @@ function Cr(e, t, n, r = !0) {
 }
 
 function wr() {
-    let e = U / 1e3,
-        t = 400 + 15 * e + fe * e * e,
-        n = Math.min(pe, t);
+    // Ease-out toward SPEED_MAX: speed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * (1 - e^(-t / SPEED_TAU)).
+    // First seconds climb fastest; later stages get diminishing returns. Hard-capped at SPEED_MAX.
+    let t = U / 1e3,
+        eased = 1 - Math.exp(-t / SPEED_TAU),
+        n = Math.min(SPEED_MAX, SPEED_MIN + (SPEED_MAX - SPEED_MIN) * eased);
     return performance.now() < vn ? n * x.slowFactor : n
 }
 
@@ -1389,7 +1259,8 @@ function zr(e, t, n) {
 }
 
 function Br() {
-    return 1 + Math.floor(U / me)
+    // Stage 1 = 5s (1 ball); every later stage = 10s (extra ball each stage).
+    return U < STAGE_FIRST_MS ? 1 : 2 + Math.floor((U - STAGE_FIRST_MS) / STAGE_LATER_MS)
 }
 
 function Vr() {
@@ -1406,7 +1277,7 @@ function $(e) {
 
 function Hr(e, t) {
     let n = An(e, t);
-    L = n.x, R = n.y, z = !0, F = [], I = [], tn = 0, Pn(), P = [Cr(n.x, n.y, 400)], Mn(G, n.x, n.y), sn = performance.now(), U = 0, W = 0, pn = 0, fn = 0, K = !1, J = [], hn = 1, gn = 0, _n = [], vn = 0, yn = 0, bn = 0, xn = 0, Sn = 0, E.textContent = `0.0`, E.classList.remove(`is-pop`), Yt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), D.classList.add(`is-hidden`), D.classList.remove(`is-start`, `is-over`), Wt.classList.add(`is-hidden`), k.classList.remove(`is-on`), Gn(), Kn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), qt.classList.remove(`is-hidden`), j = `playing`, Rn()
+    L = n.x, R = n.y, z = !0, F = [], I = [], tn = 0, Pn(), P = [Cr(n.x, n.y, SPEED_MIN)], Mn(G, n.x, n.y), sn = performance.now(), U = 0, W = 0, pn = 0, fn = 0, K = !1, J = [], hn = 1, gn = 0, _n = [], vn = 0, yn = 0, bn = 0, xn = 0, Sn = 0, E.textContent = `0.0`, E.classList.remove(`is-pop`), Yt.classList.add(`is-hidden`), O.classList.add(`is-hidden`), Jt.classList.add(`is-hidden`), D.classList.add(`is-hidden`), D.classList.remove(`is-start`, `is-over`), Wt.classList.add(`is-hidden`), k.classList.remove(`is-on`), Gn(), Kn(), Gt.classList.add(`is-hidden`), document.body.classList.remove(`is-review`), qt.classList.remove(`is-hidden`), j = `playing`, Rn()
 }
 
 function Ur(e, t) {
@@ -1576,7 +1447,7 @@ function ci(e) {
 }
 
 function li(e) {
-    return e instanceof Element && !!e.closest(`button, #actions, #review-bar, #how-to-card, #board-card, #board-strip, #start-links, input`)
+    return e instanceof Element && !!e.closest(`button, #actions, #review-bar, #how-to-card, #start-links`)
 }
 
 function ui(e, t) {
@@ -1823,7 +1694,7 @@ function Ni() {
     if (e < 24 || t < 24) return;
     let n = j === `playing` ? an : .2,
         r = (.78 + .22 * Math.sin(performance.now() / 640)) * (.45 + n * .55);
-    A.save(), A.lineJoin = `round`, A.lineCap = `round`, A.shadowBlur = 8 + n * 4, A.shadowColor = `rgba(255, 80, 210, ${.32+r*.14})`, A.strokeStyle = `rgba(94, 225, 232, ${.55+r*.12})`, A.lineWidth = 1.25, Mi(8, 8, e, t, 22), A.restore()
+    A.save(), A.lineJoin = `round`, A.lineCap = `round`, A.shadowBlur = 5 + n * 3, A.shadowColor = `rgba(255, 80, 210, ${.22+r*.1})`, A.strokeStyle = `rgba(255, 118, 220, ${.7+r*.1})`, A.lineWidth = .85, Mi(8, 8, e, t, 22), A.shadowColor = `rgba(94, 225, 232, ${.18+r*.1})`, A.strokeStyle = `rgba(94, 225, 232, ${.58+r*.12})`, A.lineWidth = .75, Mi(10, 10, e - 4, t - 4, 21), A.restore()
 }
 
 function Pi() {
@@ -1909,15 +1780,9 @@ function Bi() {
         j === `idle` && qn()
     }), zi(Tt, () => {
         Kn()
-    }), zi(Dt, () => {
-        j === `idle` && (Kn(), $n())
-    }), zi(Mt, () => {
-        Jn()
-    }), It.addEventListener(`submit`, e => {
-        e.preventDefault(), e.stopPropagation(), H = performance.now() + 1e3, V = !0, tr()
     })
 }
-document.title = y.title, xt.textContent = y.howToPlay, Ct.textContent = y.howToPlay, Tt.textContent = y.close, Dt.textContent = y.top10, kt.textContent = y.top10, Pt.textContent = y.top10, Mt.textContent = y.close, Rt.textContent = y.postScore;
+document.title = y.title, xt.textContent = y.howToPlay, Ct.textContent = y.howToPlay, Tt.textContent = y.close;
 for (let e of te) {
     let t = document.createElement(`li`);
     t.textContent = e, wt.append(t)

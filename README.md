@@ -2,7 +2,7 @@
 
 One-thumb hold-to-survive neon ball dodge game (PROTOZ).
 
-Hold your finger to live. Lift or get hit and it’s Game Over. New balls spawn from the **top and left/right sides only** — never the bottom edge. Local best, share card, 3-2-1 countdown, neon UI. World Top 10 is **Coming soon** (no live score post).
+Hold your finger to live. Lift or get hit and it’s Game Over. New balls spawn from the **top and left/right sides only** — never the bottom edge. Local best, share card, 3-2-1 countdown, neon UI. Stage 1 lasts 5 seconds; later stages last 10 seconds each.
 
 Capacitor-capable Vite + TypeScript web host. Same tree can be wrapped later for iOS.
 
